@@ -21,37 +21,25 @@ int main()
     }
 
     cout << "solvable" << endl;
+
+
+    map<vector<int>,bool> visited;
     priority_queue<Board> pq;
-    map<Board,bool> visited;
-
-
-    // while(!pq.empty()){
-    //     auto e = pq.top();
-    //     cout << e;
-    //     pq.pop();
-    //     cout << "size of pq " << pq.size() << endl;
-    //     for(auto b: e.getNeighBours()){
-    //         cout << b;
-    //     }
-    //     cout << "size of pq " << pq.size() << endl;
-    // }
     pq.push(initialBoard);
-    visited[initialBoard] = true;
+    visited[initialBoard.getBlocks()] = true;
 
     while(!pq.empty()){
         Board b = pq.top();
-        cout << b;
+        // cout << b;
         if(b.isTarget()){
             cout << "paisi" << endl;
+            cout << "prev board at " << b.getPreviousBoard() << endl;
             break;
-        } else {
-            cout <<"****this not it****" << endl;
         }
         pq.pop();
         for(auto board: b.getNeighBours()){
-            if (!visited[board]){
-                cout << board;
-                visited[board] = true;
+            if (!visited[board.getBlocks()]){
+                visited[board.getBlocks()] = true;
                 pq.push(board);
             }
         }

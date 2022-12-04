@@ -74,7 +74,11 @@ class Board {
 
         void generateSingleNeighbour(int swapIndex) {
             Board neighbour = *(this);
+            cout << "this address " << this << endl;
+            cout << "neighbour address " << &neighbour << endl;
+            cout << "parent address (in neighbour gen func) " << neighbour.previousBoard << endl;
             neighbour.previousBoard = this;
+            cout << neighbour;
             neighbour.stepsTakenFromInitialBoard++;
             neighbour.swapBlocks(this->blankIndex, swapIndex);
             this->neighbours.push_back(neighbour);
@@ -96,7 +100,7 @@ class Board {
             this->width = (int)sqrt(size);
             this->stepsTakenFromInitialBoard = 0;
             this->neighboursGenerated = false;
-            this->previousBoard = NULL;
+            this->previousBoard = nullptr;
             this->heuristic = heuristic;
 
             for(int i = 0, number; i < size; i++){
@@ -108,6 +112,7 @@ class Board {
                 blocks.push_back(number);
             }
         }
+
         Board( const Board& otherBoard ){
             size = otherBoard.size;
             width = otherBoard.width;
@@ -115,7 +120,7 @@ class Board {
             blankIndex = otherBoard.blankIndex;
             stepsTakenFromInitialBoard = otherBoard.stepsTakenFromInitialBoard;
             previousBoard = nullptr;
-            neighboursGenerated = false; //! copy naki false?
+            neighboursGenerated = false;
             heuristic = otherBoard.heuristic;
         }
         
@@ -123,9 +128,7 @@ class Board {
             vector<int> blocksCopy = blocks; 
             vector<int> temp(size);
             blocksCopy.erase(blocksCopy.begin() + blankIndex);
-            //int inversions = getInversions(blocksCopy, temp, 0, size-2);
             int inversions = getInversions2(blocksCopy);
-
             cout << "inversions " << inversions << endl;
             if(size%2==1 && inversions%2==0){
                 return true;
@@ -152,10 +155,8 @@ class Board {
 
             if ((!prevExists || (prevExists && upIndex != previousBoard->blankIndex)) && upAvailable)
                 generateSingleNeighbour(upIndex);
-
-            if ((!prevExists || (prevExists && downIndex != previousBoard->blankIndex)) && downAvailable){
+            if ((!prevExists || (prevExists && downIndex != previousBoard->blankIndex)) && downAvailable)
                 generateSingleNeighbour(downIndex);
-            }
 
             if ((!prevExists || (prevExists && leftIndex != previousBoard->blankIndex)) && leftAvailable)
                 generateSingleNeighbour(leftIndex);
@@ -166,11 +167,17 @@ class Board {
             this->neighboursGenerated = true;
             return;
         }
-        vector<Board> getNeighBours() {
+        vector<Board>& getNeighBours() {
             if(!neighboursGenerated){
                 generateAllPossibleNeighbours();
             }
             return this->neighbours;
+        }
+        vector<int> getBlocks() {
+            return this->blocks;
+        }
+        Board* getPreviousBoard() {
+            return this->previousBoard;
         }
 
         bool isTarget() {
@@ -196,8 +203,8 @@ ostream& operator<<(ostream& stream, const Board& board){
     }
     // stream << "hamming dist : " << board.hammingDistance() << endl;
     stream << "manhattan dist : " << board.manhattanDistance() << endl;
-    stream << "blank is at [" << board.blankIndex << "]" << endl;
     stream << "steps taken " << board.stepsTakenFromInitialBoard << endl;
+    stream << "parent address " << board.previousBoard << endl;
     cout << "=================" << endl;
     return stream;
 }
