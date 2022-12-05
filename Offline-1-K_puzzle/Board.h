@@ -16,7 +16,7 @@ class Board {
         int width;
         Board* previousBoard;
         vector<int> blocks;
-        vector<Board> neighbours;
+        vector<Board*> neighbours;
         int blankIndex;
         int stepsTakenFromInitialBoard;
         bool neighboursGenerated;
@@ -73,20 +73,19 @@ class Board {
         }
 
         void generateSingleNeighbour(int swapIndex) {
-            Board neighbour = *(this);
-            cout << "this address " << this << endl;
-            cout << "neighbour address " << &neighbour << endl;
-            cout << "parent address (in neighbour gen func) " << neighbour.previousBoard << endl;
-            neighbour.previousBoard = this;
-            cout << neighbour;
-            neighbour.stepsTakenFromInitialBoard++;
-            neighbour.swapBlocks(this->blankIndex, swapIndex);
+            Board* neighbour = new Board(*this);
+            neighbour->previousBoard = this;
+            neighbour->stepsTakenFromInitialBoard++;
+            neighbour->swapBlocks(this->blankIndex, swapIndex);
             this->neighbours.push_back(neighbour);
+            // cout << *neighbour;
+            // cout << "address " << neighbour << endl;
+            // cout << "^^etar parent" << neighbours[neighbours.size() - 1]->getPreviousBoard() << endl;
         }
         
 
         int getInversions2(vector<int> blocks){
-            int inversions=0;
+            int inversions = 0;
             for(int i=0; i<size; i++)
                 for(int j=i+1; j<size; j++)
                     if (blocks[j] < blocks[i])
@@ -153,21 +152,26 @@ class Board {
             bool leftAvailable = leftIndex >= 0 && (getY(leftIndex) == getY(blankIndex));
             bool rightAvailable = (getY(rightIndex) == getY(blankIndex)) ;
 
-            if ((!prevExists || (prevExists && upIndex != previousBoard->blankIndex)) && upAvailable)
+            if ((!prevExists || (prevExists && upIndex != previousBoard->blankIndex)) && upAvailable){
                 generateSingleNeighbour(upIndex);
-            if ((!prevExists || (prevExists && downIndex != previousBoard->blankIndex)) && downAvailable)
+            }
+
+            if ((!prevExists || (prevExists && downIndex != previousBoard->blankIndex)) && downAvailable){
                 generateSingleNeighbour(downIndex);
+            }
 
-            if ((!prevExists || (prevExists && leftIndex != previousBoard->blankIndex)) && leftAvailable)
+            if ((!prevExists || (prevExists && leftIndex != previousBoard->blankIndex)) && leftAvailable){
                 generateSingleNeighbour(leftIndex);
+            }
 
-            if ((!prevExists || (prevExists && rightIndex != previousBoard->blankIndex)) && rightAvailable)
+            if ((!prevExists || (prevExists && rightIndex != previousBoard->blankIndex)) && rightAvailable){
                 generateSingleNeighbour(rightIndex);
+            }
 
             this->neighboursGenerated = true;
             return;
         }
-        vector<Board>& getNeighBours() {
+        vector<Board*> getNeighBours() {
             if(!neighboursGenerated){
                 generateAllPossibleNeighbours();
             }
@@ -186,8 +190,18 @@ class Board {
                     return false;
             return true;
         }
+
+        int cost() const {
+            return stepsTakenFromInitialBoard+h();
+        } 
+
+        string getHeuristicName(){
+            if(heuristic==0)
+                return "Manhatton";
+            return "Hamming";
+        }
+
         friend ostream& operator<<(ostream &stream, const Board &board);
-        friend bool operator<(const Board &me, const Board &other);
         friend bool operator==(const Board &me,const Board &other);
 };
 
@@ -202,19 +216,18 @@ ostream& operator<<(ostream& stream, const Board& board){
         stream << endl;
     }
     // stream << "hamming dist : " << board.hammingDistance() << endl;
-    stream << "manhattan dist : " << board.manhattanDistance() << endl;
-    stream << "steps taken " << board.stepsTakenFromInitialBoard << endl;
-    stream << "parent address " << board.previousBoard << endl;
+    // stream << "manhattan dist : " << board.manhattanDistance() << endl;
+    // stream << "steps taken " << board.stepsTakenFromInitialBoard << endl;
+    // stream << "cost : " << board.stepsTakenFromInitialBoard + board.h() << endl;
     cout << "=================" << endl;
     return stream;
 }
 
-bool operator<(const Board &me, const Board &other)
-{
-    int cost1 = me.stepsTakenFromInitialBoard + me.h();
-    int cost2 = other.stepsTakenFromInitialBoard + other.h();
-    return cost1 > cost2;
-}
+struct compareCost {
+    bool operator()(const Board *me, const Board *other){
+        return me->cost() > other->cost();
+    }
+};
 
 bool operator==(const Board &me, const Board &other){
     if (me.size != other.size)
