@@ -78,9 +78,6 @@ class Board {
             neighbour->stepsTakenFromInitialBoard++;
             neighbour->swapBlocks(this->blankIndex, swapIndex);
             this->neighbours.push_back(neighbour);
-            // cout << *neighbour;
-            // cout << "address " << neighbour << endl;
-            // cout << "^^etar parent" << neighbours[neighbours.size() - 1]->getPreviousBoard() << endl;
         }
         
 
