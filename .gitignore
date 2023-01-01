@@ -1,6 +1,12 @@
+Submissions
 **/1805074
 *.zip
 *.exe
+*.sh
 **/playground
+notes.txt
+### VisualStudioCode ###
+**/.vscode
+**/.history
 
 **/tempCodeRunnerFile

@@ -1,6 +1,11 @@
 {
     "files.associations": {
         "*.asm": "assembly",
-        "iosfwd": "cpp"
+        "iosfwd": "cpp",
+        "iostream": "cpp",
+        "bitset": "cpp",
+        "chrono": "cpp",
+        "iomanip": "cpp",
+        "ostream": "cpp"
     }
 }

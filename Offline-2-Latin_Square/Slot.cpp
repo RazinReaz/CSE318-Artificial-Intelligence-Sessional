@@ -6,71 +6,105 @@
 using namespace std;
 
 int Slot::n;
+int Slot::ordering_heuristic;
 
-Slot::Slot(int x = -1, int y = -1, int val = 0) {
+Slot::Slot(int x = -1, int y = -1, int val = 0)
+{
     this->x = x;
     this->y = y;
     this->val = val;
     this->set = (val != 0);
-
-    if(!set){
-        this->domain.resize(n+1);
-        for(int i=1; i<=n; i++) domain[i] = 1;
+    if (!set) {
+        this->assigned = false;
         this->legal_value_count = n;
     } else {
+        this->assigned = true;
         this->legal_value_count = 0;
     }
-    //cout << x << y << legal_value_count << set << endl;
+    this->unassigned_degree = -1;
 }
 
-int Slot::getX() const{
+int Slot::getX() const
+{
     return this->x;
 }
 
-int Slot::getY() const{
+int Slot::getY() const
+{
     return this->y;
 }
 
-int& Slot::value() {
+int &Slot::value()
+{
     return this->val;
 }
 
-bool Slot::isSet() {
+bool Slot::isSet()
+{
     return this->set;
 }
 
-void setN(int n) {
-    Slot::n = n;
+void Slot::set_legal_value_count(int count) {
+    if(!this->set)
+        this->legal_value_count = count;
 }
 
-vector<int> Slot::get_domain_values()
+void Slot::set_unassigned_degree(int count){
+    if (!this->set)
+        this->unassigned_degree = count;
+}
+
+#define VAH1 1
+#define VAH2 2
+#define VAH3 3
+#define VAH4 4
+#define VAH5 5
+
+struct by_heuristic
 {
-    vector<int> domain_values;
-    for(int i=1; i<=n ; i++)
-        if(domain[i]==1)
-            domain_values.push_back(i);
-    return domain_values;
-}
+    bool operator()(const Slot *a, const Slot *b) const
+    {
+        double ac, bc;
+        bool cmp;
+        if (Slot::ordering_heuristic == VAH1)
+        { // most constrained variable
+            ac = a->legal_value_count;
+            bc = b->legal_value_count;
+            cmp = ac < bc;
+        }
+        else if (Slot::ordering_heuristic == VAH2)
+        { // most constraining variable
+            ac = a->unassigned_degree;
+            bc = b->unassigned_degree;
+            cmp = ac > bc;
+        }
+        else if (Slot::ordering_heuristic == VAH3)
+        { // VAH1 ties broken by VAH2
+            ac = a->legal_value_count;
+            bc = b->legal_value_count;
+            if(ac == bc){
+                ac = a->unassigned_degree;
+                bc = b->unassigned_degree;
+            }
+            cmp = ac < bc;
+        }
+        else if (Slot::ordering_heuristic == VAH4)
+        { // minimum of VAH1/VAH2
+            ac = (a->legal_value_count*1.0)/(a->unassigned_degree+1);
+            bc = (b->legal_value_count*1.0)/(b->unassigned_degree+1);
+            // cout << ac << " " << bc << endl;
+            cmp = ac < bc;
+        }
+        else if (Slot::ordering_heuristic == VAH5)
+        { // random
+            ac = bc = 0;
+        }
 
-void Slot::discard_value_from_domain(int value)
-{
-    if(!this->isSet() && this->domain[value] != 0){
-        this->domain[value] = 0;
-        legal_value_count--;
-    }
-}
-
-bool Slot::operator==(const Slot& other){
-    return this->x == other.y && this->x == other.y;
-}
-
-
-
-
-// functor for sorting all unset slot pointers by number of legal values
-// most constrained variable
-struct by_legal_value_count {
-    bool operator()(const Slot* a, const Slot* b) {
-        return a->legal_value_count > b->legal_value_count;
+        if(ac == bc){
+            // tie breaking with slot's x,y
+            if(a->x == b->x) return a->y < b->y;
+            return a->x < b->x;
+        } 
+        return cmp;
     }
 };
