@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <cstdlib>
 #include "Slot.h"
 
 using namespace std;
@@ -92,7 +93,6 @@ struct by_heuristic
         { // minimum of VAH1/VAH2
             ac = (a->legal_value_count*1.0)/(a->unassigned_degree+1);
             bc = (b->legal_value_count*1.0)/(b->unassigned_degree+1);
-            // cout << ac << " " << bc << endl;
             cmp = ac < bc;
         }
         else if (Slot::ordering_heuristic == VAH5)
