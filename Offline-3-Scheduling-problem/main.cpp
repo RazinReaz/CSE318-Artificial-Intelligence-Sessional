@@ -14,7 +14,7 @@ int main() {
     cout << n << endl;
 
     // initializing the graph
-    Graph<Course> g(n);
+    Graph<Course> g(n, LARGEST_DEGREE);
     vector<Course> courses(n+1);
 
 
@@ -44,11 +44,15 @@ int main() {
         for( int i = 0; i<ids.size(); i++){
             for( int j = i-1; j>=0; j--){
                 g.addEdge(courses[ids[i]], courses[ids[j]]);
-                // cout << ids[i] << " - " << ids[j] << endl;
             }
         }
     }
-    g.setVertices(courses);
+
+    for ( auto x: courses) {
+        g.insertNode(x);
+    }
+    
+    cout << g << endl;
     file.close();
     return 0;
 }

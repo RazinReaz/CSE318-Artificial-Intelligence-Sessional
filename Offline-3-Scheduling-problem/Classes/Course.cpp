@@ -10,6 +10,7 @@ Course::Course(int id = -1, int student_count = -1)
     this->id = id;
     this->date = -1;
     this->degree = 0;
+    this->saturation = 0;
     this->student_count = student_count;
 }
 
