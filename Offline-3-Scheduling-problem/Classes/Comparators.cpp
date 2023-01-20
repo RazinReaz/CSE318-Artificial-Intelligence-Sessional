@@ -12,28 +12,28 @@ std::string heuristic_names[] = {"", "LARGEST_DEGREE", "LARGEST_SATURATION", "LA
 struct by_heuristics
 {
     template <typename node>
-    bool operator()(const node &a, const node &b) const
+    bool operator()(const node* a, const node* b) const
     {
         int ac = 0, bc = 0;
         bool cmp;
         if(Course::heuristic == LARGEST_DEGREE){
-            ac = a.degree;
-            bc = b.degree;
+            ac = a->degree;
+            bc = b->degree;
             cmp = ac > bc;
         }
         else if(Course::heuristic == LARGEST_SATURATION){
-            ac = a.saturation;
-            bc = b.saturation;
+            ac = a->saturation;
+            bc = b->saturation;
             cmp = ac > bc;
         }
         else if(Course::heuristic == LARGEST_ENROLLMENT){
-            ac = a.student_count;
-            bc = b.student_count;
+            ac = a->student_count;
+            bc = b->student_count;
             cmp = ac > bc;
         }
 
         if(ac == bc)
-            return a.id < b.id;
+            return a->id < b->id;
         return cmp;
     }
 };

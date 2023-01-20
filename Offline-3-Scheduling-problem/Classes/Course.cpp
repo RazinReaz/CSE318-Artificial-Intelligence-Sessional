@@ -28,8 +28,18 @@ bool Course::operator<(const Course &that)
     return this->id < that.id;
 }
 
+bool Course::is_assigned()
+{
+    return this->date != -1;
+}
+
 std::ostream &operator<<(std::ostream &stream, const Course &c)
 {
-    stream << c.id << "[" << std::setw(3) << c.student_count << "]";
+    stream << c.id << "[";
+    if(Course::heuristic == LARGEST_DEGREE)     stream << "deg" << std::setw(3) << c.degree;
+    if(Course::heuristic == LARGEST_SATURATION) stream << "sat" << std::setw(3) << c.saturation;
+    if(Course::heuristic == LARGEST_ENROLLMENT) stream << "enr" << std::setw(3) << c.student_count;
+    stream << " <" << std::setw(3) << c.date << "> ";
+    stream << "]";
     return stream;
 }
