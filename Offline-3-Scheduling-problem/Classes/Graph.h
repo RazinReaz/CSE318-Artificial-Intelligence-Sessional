@@ -6,6 +6,10 @@
 #include <map>
 #include "Comparators.cpp"
 #include "Edge.h"
+
+#define LINEAR 0
+#define EXPONENTIAL 1
+
 int Course::heuristic;
 template <typename node>
 class Graph
@@ -16,21 +20,25 @@ private:
     std::set<node*, by_heuristics> vertices;
     std::map<std::pair<int, int>, bool> edge_exists; //this map ensures that two nodes don't have multiple edges between them
     std::vector<node*> scheduled_vertices;
+    std::vector<node*> scheduled_vertices_ordered; //this vector stores the scheduled vertices in the order they were popped
+    std::vector<std::vector<int>> student_courses; //this vector stores the ith student's enrolled courses
     node* get_next_node();
     int calculate_saturation(node& u);
     int count_set_bits(int mask);
+    std::vector<std::pair<int, int>> get_second_dates(node &u);
+    void kempe_chain_interchange(node& src, int date1, int date2);
 
 public:
-    std::vector<std::vector<int>> student_courses; //this vector stores the ith studen't enrolled courses
     Graph(int vertex_count, int heuristic);
     ~Graph();
     void addEdge(node& u, node& v);
     void insertNode(node& u);
+    void push_students_enrolled_courses(std::vector<int> &course_ids);
     void printSchedule();
     void schedule();
     void print_student_courses();
-    double penaltyLinear();
-    double penaltyExponential();
+    void minimize_conflicts(int penalty_type);
+    double penalty(int type);
     template <typename _node>
     friend std::ostream &operator<<(std::ostream &stream, const Graph<_node> &g);
 };

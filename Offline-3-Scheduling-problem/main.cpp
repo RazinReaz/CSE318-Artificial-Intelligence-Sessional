@@ -14,7 +14,6 @@ void scheduling_problem_solver(string filename, int heuristic)
         Course c(id, student_count);
         courses.push_back(c);   //this line of code assumes that the courses are numbered serially from 1
     }
-    cout << "Number of courses : " << n << endl;
     file.close();
 
     // initializing the graph
@@ -32,7 +31,7 @@ void scheduling_problem_solver(string filename, int heuristic)
         vector<int> ids;
         while(ss >> course_id)
             ids.push_back(course_id);
-        g.student_courses.push_back(ids);
+        g.push_students_enrolled_courses(ids);
         
         for( int i = 0; i<ids.size(); i++){
             for( int j = i-1; j>=0; j--){
@@ -47,17 +46,20 @@ void scheduling_problem_solver(string filename, int heuristic)
         g.insertNode(courses[i]);
     }
     cout << g << endl;
-    g.print_student_courses();
+    // g.print_student_courses();
     g.schedule();
-    g.printSchedule();
-    cout << "lnr penalty : " << g.penaltyLinear() << endl;
-    cout << "Exp penalty : " << g.penaltyExponential() << endl;
-    // for (auto x : courses) cout << x << endl;
+    // g.printSchedule();
+
+    g.minimize_conflicts(LINEAR);
+    
+    // cout << "final schedule: " << endl;
+    // g.printSchedule();
+
     file.close();
     return;
 }
 
 int main( int argc, char * argv[]) {
-    scheduling_problem_solver("inputs/in", LARGEST_SATURATION);
+    scheduling_problem_solver("inputs/yor-f-83", LARGEST_DEGREE);
     return 0;
 }
