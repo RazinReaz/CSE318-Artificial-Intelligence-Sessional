@@ -38,6 +38,7 @@ public:
     void schedule();
     void print_student_courses();
     void minimize_conflicts(int penalty_type);
+    bool conflicts_present();
     double penalty(int type);
     template <typename _node>
     friend std::ostream &operator<<(std::ostream &stream, const Graph<_node> &g);

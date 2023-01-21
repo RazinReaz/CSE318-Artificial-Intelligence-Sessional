@@ -134,7 +134,7 @@ double Graph<node>::penalty(int type) {
             for (int j = i + 1; j < student_courses[std_id].size(); j++) {
                 int course_id_2 = student_courses[std_id][j];
                 int gap = abs(scheduled_vertices[course_id_1]->date - scheduled_vertices[course_id_2]->date);
-                // if(gap == 0) std::cout << "bhairebhai coloring hoynai toh" << std::endl;
+                if(gap == 0) std::cout << "bhairebhai coloring hoynai toh" << std::endl;
                 double penalty_per_student;
                 if ( type == LINEAR ) penalty_per_student = 2*(5-gap);
                 else if ( type == EXPONENTIAL) penalty_per_student = pow(2.0, (5-gap)*1.0);
@@ -150,19 +150,24 @@ template <typename node>
 void Graph<node>::minimize_conflicts(int penalty_type) {
 
     double prev_penalty = penalty(penalty_type);
-    int n = 30;
+    int n = 1000;
     std::cout << "initial penalty " << prev_penalty << std::endl;
     
     while(n--) {
-        for ( node* source : scheduled_vertices_ordered) {
+        for ( node* source : scheduled_vertices_ordered ) {
             std::vector<std::pair<int,int>> second_dates = get_second_dates(*source);
             for (std::pair<int, int> second_date_freq : second_dates) {
                 int first_date = source->date;
                 int second_date = second_date_freq.first;
-                kempe_chain_interchange(*source, first_date, second_date);
                 // printSchedule();
+                kempe_chain_interchange(*source, first_date, second_date);
+                if(conflicts_present()){
+                    std::cout << "source " << *source << " first date " << first_date << " second date " << second_date << std::endl;
+                    printSchedule();
+                    for(auto c : adj[source->id]) std::cout << *c << std::endl;
+                    exit(1);
+                }
                 double new_penalty = penalty(penalty_type);
-                // std::cout << "new penalty " << new_penalty << std::endl;
                 if(new_penalty < prev_penalty) {
                     prev_penalty = new_penalty;
                 }
@@ -198,12 +203,6 @@ std::vector<std::pair<int, int>> Graph<node>::get_second_dates(node &u)
         if(a.second == b.second) return a.first < b.first;
         return a.second > b.second;
     });
-    
-    // //print date freq sorted#########################
-    // for (int i = 0; i < date_freq_sorted.size(); i++) {
-    //     std::cout << date_freq_sorted[i].first << " " << date_freq_sorted[i].second << std::endl;
-    // }
-    // //###############################################
     return date_freq_sorted;
 }
 
@@ -213,15 +212,19 @@ void Graph<node>::kempe_chain_interchange(node& u, int date1, int date2) {
     std::queue<node*> q;
     q.push(&u);
     std::vector<bool> visited(vertex_count+1, false);
+    visited[u.id] = true;
     while (!q.empty()) {
         node *current_node = q.front();
         q.pop();
+        // std::cout << "kemp chain node befor " << *current_node << std::endl;
         current_node->date == date2 ? current_node->date = date1 : current_node->date = date2;
-        visited[current_node->id] = true;
+        // std::cout << "kemp chain node after " << *current_node << std::endl;
         for (int i = 0; i < adj[current_node->id].size(); i++) {
             node *adj_node = adj[current_node->id][i];
-            if (!visited[adj_node->id] && (adj_node->date == date1 || adj_node->date == date2))
+            if (!visited[adj_node->id] && (adj_node->date == date1 || adj_node->date == date2)){
+                visited[adj_node->id] = true;
                 q.push(adj_node);
+            }
         }
     }
 }
@@ -232,7 +235,7 @@ template <typename node>
 void Graph<node>::printSchedule(){
     for (int i = 0; i < scheduled_vertices.size(); i++) {
         if (scheduled_vertices[i] != nullptr) {
-            std::cout << "Course " << i << " was assigned the day " << scheduled_vertices[i]->date << std::endl;
+            std::cout << "Course " <<std:: setw(3) << i << " was assigned the day " << scheduled_vertices[i]->date << std::endl;
         }
     }
 }
@@ -246,4 +249,19 @@ void Graph<node>::print_student_courses() {
         }
         std::cout << std::endl;
     }
+}
+
+
+template <typename node>
+bool Graph<node>::conflicts_present() {
+    bool result = false;
+    for (int i = 1; i<vertex_count; i++) {
+        for( auto c : adj[i] ) {
+            if (scheduled_vertices[i]->date == scheduled_vertices[c->id]->date) {
+                result = true;
+                std::cout << "conflict between " << i << " and " << c->id << " with date " << scheduled_vertices[i]->date << std::endl;
+            }
+        }
+    }
+    return result;
 }
