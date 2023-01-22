@@ -28,18 +28,24 @@ private:
     std::vector<std::pair<int, int>> get_second_dates(node &u);
     void kempe_chain_interchange(node& src, int date1, int date2);
 
+    int timeslots;
+    double initial_penalty;
+    double penalty_after_kempe;
+    double penalty_after_pair_swap;
+
 public:
     Graph(int vertex_count, int heuristic);
     ~Graph();
     void addEdge(node& u, node& v);
     void insertNode(node& u);
     void push_students_enrolled_courses(std::vector<int> &course_ids);
-    void printSchedule();
     void schedule();
+    void printSchedule();
     void print_student_courses();
     void minimize_conflicts(int penalty_type);
     bool conflicts_present();
     double penalty(int type);
+    void report();
     template <typename _node>
     friend std::ostream &operator<<(std::ostream &stream, const Graph<_node> &g);
 };
@@ -47,9 +53,9 @@ public:
 template <typename node>
 std::ostream &operator<<(std::ostream &stream, const Graph<node> &g)
 {
-    stream << ":::Graph:::" << std::endl;
+    // stream << ":::Graph:::" << std::endl;
     stream << "Heuristic used: " << heuristic_names[Course::heuristic] << std::endl;
-    stream << "Number of vertices: " << g.vertices.size() << std::endl;
+    // stream << "Number of vertices: " << g.vertex_count << std::endl;
     // stream << "Adjacency list:" << std::endl;
     // for (int i = 1; i <= g.vertex_count; i++)
     // {
@@ -59,12 +65,6 @@ std::ostream &operator<<(std::ostream &stream, const Graph<node> &g)
     //         stream << *g.adj[i][j] << " -> ";
     //     }
     //     stream << std::endl;
-    // }
-    // stream << "first 10 vertice(s):" << std::endl;
-    // int i = 0;
-    // for (auto it = g.vertices.begin(); it != g.vertices.end() && i < 10; it++, i++)
-    // {
-    //     stream << **it << std::endl;
     // }
     return stream;
 }

@@ -6,8 +6,9 @@
 #define LARGEST_DEGREE 1
 #define LARGEST_SATURATION 2
 #define LARGEST_ENROLLMENT 3
+#define RANDOM 4
 
-std::string heuristic_names[] = {"", "LARGEST_DEGREE", "LARGEST_SATURATION", "LARGEST_ENROLLMENT"};
+std::string heuristic_names[] = {"", "LARGEST_DEGREE", "LARGEST_SATURATION", "LARGEST_ENROLLMENT", "RANDOM"};
 
 struct by_heuristics
 {
@@ -30,7 +31,10 @@ struct by_heuristics
             ac = a->student_count;
             bc = b->student_count;
             cmp = ac > bc;
-        }
+        } else if (Course::heuristic == RANDOM) {
+            ac = bc = 0;
+        }else
+            throw std::runtime_error("Invalid heuristic: " + std::to_string(Course::heuristic));
 
         if(ac == bc)
             return a->id < b->id;

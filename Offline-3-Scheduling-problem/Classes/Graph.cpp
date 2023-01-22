@@ -7,7 +7,13 @@ template <typename node>
 Graph<node>::Graph(int vertex_count, int heuristic) 
 {
     this->vertex_count = vertex_count;
-    this->adj.resize(vertex_count+1);
+    this->timeslots = 0;
+
+    this->initial_penalty = 0;
+    this->penalty_after_kempe = 0;
+    this->penalty_after_pair_swap = 0;
+
+    this->adj.resize(vertex_count + 1);
     this->scheduled_vertices.resize(vertex_count+1);
     this->student_courses.resize(1); // the first entry is a dummy
     Course::heuristic = heuristic;
@@ -56,9 +62,6 @@ void Graph<node>::schedule() {
 
     while(!this->vertices.empty()) {
         node *current_node = get_next_node();
-        
-        // std::cout << "current node is " << *current_node << std::endl;
-
         for (int i = 0; i < adj[current_node->id].size(); i++) {
             node *adj_node = adj[current_node->id][i];
             if (adj_node->is_assigned())
@@ -67,10 +70,8 @@ void Graph<node>::schedule() {
         // find the first available date and assign it to the current node
         for (int i = 0; i < assigned_dates.size(); i++) {
             if (assigned_dates[i] == 0) {
-                // std::cout << "found color " << i << std::endl;
                 current_node->date = i;
                 imax = std::max(imax, i);
-                // std::cout << "current node after assignment " << *current_node << std::endl << std::endl;
                 break;
             }
         }
@@ -95,7 +96,8 @@ void Graph<node>::schedule() {
         // reset the assigned dates vector
         for (int i = 0; i<assigned_dates.size(); i++) assigned_dates[i] = 0;
     }
-    std::cout << "total days " << imax+1 << std::endl;
+
+    this->timeslots = imax + 1;
 }
 
 template <typename node>
@@ -130,6 +132,9 @@ double Graph<node>::penalty(int type) {
     for (int std_id = 1; std_id < student_courses.size(); std_id++) {
         //for each student
         for (int i = 0; i < student_courses[std_id].size()-1; i++) {
+            // std::cout << "student id: " << std_id << std::endl;
+            // std::cout << "course id: " << student_courses[std_id][i] << std::endl;
+            // std::cout << "i: " << i << std::endl;
             int course_id_1 = student_courses[std_id][i];
             for (int j = i + 1; j < student_courses[std_id].size(); j++) {
                 int course_id_2 = student_courses[std_id][j];
@@ -142,39 +147,30 @@ double Graph<node>::penalty(int type) {
             }
         }
     }
-
     return penalty / (student_courses.size()-1);
 }
 
 template <typename node>
 void Graph<node>::minimize_conflicts(int penalty_type) {
 
-    double prev_penalty = penalty(penalty_type);
     int n = 1000;
-    std::cout << "initial penalty " << prev_penalty << std::endl;
-    
+    this->initial_penalty = penalty(penalty_type);
+    double prev_penalty = initial_penalty;
+
     while(n--) {
         for ( node* source : scheduled_vertices_ordered ) {
             std::vector<std::pair<int,int>> second_dates = get_second_dates(*source);
             for (std::pair<int, int> second_date_freq : second_dates) {
                 int first_date = source->date;
                 int second_date = second_date_freq.first;
-                // printSchedule();
                 kempe_chain_interchange(*source, first_date, second_date);
-                if(conflicts_present()){
-                    std::cout << "source " << *source << " first date " << first_date << " second date " << second_date << std::endl;
-                    printSchedule();
-                    for(auto c : adj[source->id]) std::cout << *c << std::endl;
-                    exit(1);
-                }
                 double new_penalty = penalty(penalty_type);
+
                 if(new_penalty < prev_penalty) {
                     prev_penalty = new_penalty;
                 }
                 else {
                     kempe_chain_interchange(*source, second_date, first_date);
-                    // std::cout << "kempe chain interchange reverted" << std::endl;
-                    // printSchedule();
                 }
                 n--;
                 if(n <= 0) break;
@@ -182,7 +178,7 @@ void Graph<node>::minimize_conflicts(int penalty_type) {
             if (n <= 0) break;
         }
     }
-    std::cout << "final penalty " << prev_penalty << std::endl;
+    this->penalty_after_kempe = prev_penalty;
 }
 
 template <typename node>
@@ -208,7 +204,6 @@ std::vector<std::pair<int, int>> Graph<node>::get_second_dates(node &u)
 
 template <typename node>
 void Graph<node>::kempe_chain_interchange(node& u, int date1, int date2) {
-    //bfs
     std::queue<node*> q;
     q.push(&u);
     std::vector<bool> visited(vertex_count+1, false);
@@ -216,9 +211,7 @@ void Graph<node>::kempe_chain_interchange(node& u, int date1, int date2) {
     while (!q.empty()) {
         node *current_node = q.front();
         q.pop();
-        // std::cout << "kemp chain node befor " << *current_node << std::endl;
         current_node->date == date2 ? current_node->date = date1 : current_node->date = date2;
-        // std::cout << "kemp chain node after " << *current_node << std::endl;
         for (int i = 0; i < adj[current_node->id].size(); i++) {
             node *adj_node = adj[current_node->id][i];
             if (!visited[adj_node->id] && (adj_node->date == date1 || adj_node->date == date2)){
@@ -264,4 +257,12 @@ bool Graph<node>::conflicts_present() {
         }
     }
     return result;
+}
+
+template <typename node>
+void Graph<node>::report() {
+    std::cout << "Timeslots: " << timeslots << std::endl;
+    std::cout << "Initial Penalty: " << initial_penalty << std::endl;
+    std::cout << "Penalty after Kempe: " << penalty_after_kempe << std::endl;
+    std::cout << "penalty after pair-swap " << penalty_after_pair_swap << std::endl;
 }

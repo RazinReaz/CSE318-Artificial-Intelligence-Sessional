@@ -45,21 +45,26 @@ void scheduling_problem_solver(string filename, int heuristic)
     for (int i = 1; i<courses.size(); i++) {
         g.insertNode(courses[i]);
     }
+    cout << "data: " << filename << endl;
+    cout << "courses: " << n << endl;
     cout << g << endl;
-    // g.print_student_courses();
     g.schedule();
-    // g.printSchedule();
-
-    g.minimize_conflicts(LINEAR);
+    g.minimize_conflicts(EXPONENTIAL);
     
     // cout << "final schedule: " << endl;
     // g.printSchedule();
 
+    g.report();
     file.close();
     return;
 }
 
 int main( int argc, char * argv[]) {
-    scheduling_problem_solver("inputs/yor-f-83", LARGEST_DEGREE);
+    int heuristic = RANDOM;
+    scheduling_problem_solver("inputs/car-f-92", heuristic);
+    scheduling_problem_solver("inputs/car-s-91", heuristic);
+    scheduling_problem_solver("inputs/kfu-s-93", heuristic);
+    scheduling_problem_solver("inputs/tre-s-92", heuristic);
+    scheduling_problem_solver("inputs/yor-f-83", heuristic);
     return 0;
 }
