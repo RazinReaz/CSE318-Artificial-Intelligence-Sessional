@@ -132,9 +132,6 @@ double Graph<node>::penalty(int type) {
     for (int std_id = 1; std_id < student_courses.size(); std_id++) {
         //for each student
         for (int i = 0; i < student_courses[std_id].size()-1; i++) {
-            // std::cout << "student id: " << std_id << std::endl;
-            // std::cout << "course id: " << student_courses[std_id][i] << std::endl;
-            // std::cout << "i: " << i << std::endl;
             int course_id_1 = student_courses[std_id][i];
             for (int j = i + 1; j < student_courses[std_id].size(); j++) {
                 int course_id_2 = student_courses[std_id][j];
@@ -179,6 +176,50 @@ void Graph<node>::minimize_conflicts(int penalty_type) {
         }
     }
     this->penalty_after_kempe = prev_penalty;
+    //pair swap operator
+    n=1000;
+    for(int i = 1; i < scheduled_vertices.size()-1 ; i++) {
+        node* course1 = scheduled_vertices[i];
+        for(int j=i+1; j<scheduled_vertices.size(); j++) {
+            bool continue_flag = false;
+            node* course2 = scheduled_vertices[j];
+            int date1 = course1->date;
+            int date2 = course2->date;
+
+            //find if course1 has adjacent date2, if so, continue j loop
+            for (node* adj_node : adj[course1->id]) {
+                if(adj_node->date == date2) {
+                    continue_flag = true;
+                    break;
+                }
+            }
+            if (continue_flag) continue;
+            //find if course2 has adjacent date1, if so, continue j loop
+            for (node *adj_node : adj[course2->id]) {
+                if (adj_node->date == date1) {
+                    continue_flag = true;
+                    break;
+                }
+            }
+            if (continue_flag) continue;
+
+            course1->date = date2;
+            course2->date = date1;
+            double new_penalty = penalty(penalty_type);
+            if(new_penalty < prev_penalty) {
+                prev_penalty = new_penalty;
+            }
+            else {
+                course1->date = date1;
+                course2->date = date2;
+            }
+            n--;
+            if(n <= 0) break;
+        }
+        if(n <= 0) break;
+    }
+    this->penalty_after_pair_swap = prev_penalty;
+    return;
 }
 
 template <typename node>

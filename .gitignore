@@ -3,6 +3,8 @@ Submissions
 *.zip
 *.exe
 *.sh
+*.docx
+*.temp
 **/playground
 notes.txt
 ### VisualStudioCode ###

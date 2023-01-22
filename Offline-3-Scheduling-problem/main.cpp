@@ -47,10 +47,10 @@ void scheduling_problem_solver(string filename, int heuristic)
     }
     cout << "data: " << filename << endl;
     cout << "courses: " << n << endl;
-    cout << g << endl;
+    cout << g;
     g.schedule();
-    g.minimize_conflicts(EXPONENTIAL);
-    
+    g.minimize_conflicts(LINEAR);
+    g.conflicts_present();
     // cout << "final schedule: " << endl;
     // g.printSchedule();
 
@@ -60,7 +60,7 @@ void scheduling_problem_solver(string filename, int heuristic)
 }
 
 int main( int argc, char * argv[]) {
-    int heuristic = RANDOM;
+    int heuristic = LARGEST_SATURATION;
     scheduling_problem_solver("inputs/car-f-92", heuristic);
     scheduling_problem_solver("inputs/car-s-91", heuristic);
     scheduling_problem_solver("inputs/kfu-s-93", heuristic);
