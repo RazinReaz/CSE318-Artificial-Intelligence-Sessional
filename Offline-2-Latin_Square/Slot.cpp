@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include "Slot.h"
 
+
 using namespace std;
 
 int Slot::n;
@@ -55,6 +56,10 @@ void Slot::set_unassigned_degree(int count){
         this->unassigned_degree = count;
 }
 
+void Slot::set_random_value(int val){
+    this->random_value = val;
+}
+
 #define VAH1 1
 #define VAH2 2
 #define VAH3 3
@@ -97,7 +102,9 @@ struct by_heuristic
         }
         else if (Slot::ordering_heuristic == VAH5)
         { // random
-            ac = bc = 0;
+            ac = a->random_value;
+            bc = b->random_value;
+            cmp = ac < bc;
         }
 
         if(ac == bc){

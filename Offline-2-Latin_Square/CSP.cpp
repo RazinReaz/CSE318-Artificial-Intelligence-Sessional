@@ -3,6 +3,7 @@
 #include <iostream>
 #include <algorithm>
 #include "CSP.h"
+#include "rand.h"
 
 #define FAILURE -1
 
@@ -113,6 +114,10 @@ void CSP::set_heuristic_field(Slot *s, int y, int x) {
         int count = count_set_bits(col_legal_masks[x].top()) + count_set_bits(row_legal_masks[y].top()) - 2;
         s->set_unassigned_degree(count);
     }
+    if (Slot::ordering_heuristic == VAH5)
+    {
+        s->set_random_value(PMrand());
+    }
 }
 
 void CSP::addVariable(Slot *slot)
@@ -141,7 +146,6 @@ void CSP::solve()
         for (int j = 0; j < n; j++)
             if (!square[i][j]->isSet())
                 unassigned_slots.insert(square[i][j]);
-    cout << "set size " << unassigned_slots.size() << endl;
     int ret;
     performance.start_time();
     if(forward_check)

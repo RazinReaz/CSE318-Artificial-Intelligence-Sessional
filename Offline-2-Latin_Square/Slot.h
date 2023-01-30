@@ -15,6 +15,7 @@ class Slot
     bool set;
     int legal_value_count;
     int unassigned_degree;
+    int random_value;
 public:
     static int n;
     static int ordering_heuristic;
@@ -28,10 +29,10 @@ public:
     vector<int> get_domain_values();
     void set_legal_value_count(int count);
     void set_unassigned_degree(int count);
+    void set_random_value(int val);
     bool operator==(const Slot &other);
     friend ostream &operator<<(ostream &stream, const Slot &slot);
     friend struct by_heuristic;
-    friend struct by_legal_value_count;
 };
 
 ostream &operator<<(ostream &stream, const Slot &slot)

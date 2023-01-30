@@ -2,7 +2,6 @@
 #include <chrono>
 #include <iostream>
 
-
 class Performance
 {
 public:

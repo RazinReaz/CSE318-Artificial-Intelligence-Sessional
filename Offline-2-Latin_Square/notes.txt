@@ -1,5 +1,0 @@
-the heuristics is a property of slots
-because otherwise I can't assigne functor to set
-
-i was getting segfault in the FC backtrack. 
-resolved it by noticing i dont need to update already set variables

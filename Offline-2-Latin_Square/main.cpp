@@ -2,14 +2,13 @@
 #include "CSP.cpp"
 using namespace std;
 
-void do_csp(string filename, int vah, bool fc)
+void do_csp(string filename, int heuristic, bool forwardcheck)
 {
     ifstream file(filename);
-    // ifstream file("in.txt");
     int n, value;
     file >> n;
 
-    CSP csp(n, vah, fc);
+    CSP csp(n, heuristic, forwardcheck);
     for (int i = 0; i < n; i++)
     {
         for (int j = 0; j < n; j++)
@@ -19,9 +18,9 @@ void do_csp(string filename, int vah, bool fc)
             csp.addVariable(slot);
         }
     }
-    // cout << csp;
+    cout << "\nBEFORE SOLVING :\n"<< csp;
     csp.solve();
-    // cout << csp;
+    cout << "\nAFTER SOLVING :\n"<<csp;
     csp.performance.report();
     file.close();
     return;
@@ -29,7 +28,11 @@ void do_csp(string filename, int vah, bool fc)
 
 int main(int argc, char* argv[]) {
 
-    do_csp("inputs\\d-15-01.txt", VAH1, true);
+    do_csp("inputs\\d-10-01.txt", VAH5, true);
+    // do_csp("inputs\\d-10-01.txt", VAH2, true);
+    // do_csp("inputs\\d-10-01.txt", VAH3, true);
+    // do_csp("inputs\\d-10-01.txt", VAH4, true);
+    // do_csp("inputs\\d-10-01.txt", VAH5, true);
 
     return 0;
 }
