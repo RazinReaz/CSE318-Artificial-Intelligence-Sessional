@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Course.h"
+#include "PMrand.h"
 #include <iostream>
 #include <iomanip>
 
@@ -12,6 +13,7 @@ Course::Course(int id = -1, int student_count = -1)
     this->degree = 0;
     this->saturation = 0;
     this->student_count = student_count;
+    this->random_value = PMrand();
 }
 
 Course::~Course()

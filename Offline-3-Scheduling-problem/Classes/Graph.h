@@ -57,8 +57,7 @@ std::ostream &operator<<(std::ostream &stream, const Graph<node> &g)
     stream << "Heuristic used: " << heuristic_names[Course::heuristic] << std::endl;
     // stream << "Number of vertices: " << g.vertex_count << std::endl;
     // stream << "Adjacency list:" << std::endl;
-    // for (int i = 1; i <= g.vertex_count; i++)
-    // {
+    // for (int i = 1; i <= g.vertex_count; i++) {
     //     stream << i << ": ";
     //     for (int j = 0; j < g.adj[i].size(); j++)
     //     {

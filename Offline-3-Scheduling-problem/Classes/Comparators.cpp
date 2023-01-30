@@ -32,7 +32,9 @@ struct by_heuristics
             bc = b->student_count;
             cmp = ac > bc;
         } else if (Course::heuristic == RANDOM) {
-            ac = bc = 0;
+            ac = a->random_value;
+            bc = b->random_value;
+            cmp = ac > bc;
         }else
             throw std::runtime_error("Invalid heuristic: " + std::to_string(Course::heuristic));
 

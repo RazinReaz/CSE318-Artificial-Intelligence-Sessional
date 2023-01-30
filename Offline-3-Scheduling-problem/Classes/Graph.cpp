@@ -177,7 +177,7 @@ void Graph<node>::minimize_conflicts(int penalty_type) {
     }
     this->penalty_after_kempe = prev_penalty;
     //pair swap operator
-    n=1000;
+    n = 1000;
     for(int i = 1; i < scheduled_vertices.size()-1 ; i++) {
         node* course1 = scheduled_vertices[i];
         for(int j=i+1; j<scheduled_vertices.size(); j++) {

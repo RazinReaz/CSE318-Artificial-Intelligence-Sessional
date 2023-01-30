@@ -15,6 +15,7 @@ private:
     int degree;
     int saturation;
     int student_count;
+    int random_value;
 public:
     static int heuristic;
     Course(int, int);

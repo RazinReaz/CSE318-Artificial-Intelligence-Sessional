@@ -60,7 +60,9 @@ void scheduling_problem_solver(string filename, int heuristic)
 }
 
 int main( int argc, char * argv[]) {
-    int heuristic = LARGEST_SATURATION;
+    // available heuristics: LARGEST_DEGREE, LARGEST_SATURATION, LARGEST_ENROLLMENT, RANDOM
+    
+    int heuristic = RANDOM;
     scheduling_problem_solver("inputs/car-f-92", heuristic);
     scheduling_problem_solver("inputs/car-s-91", heuristic);
     scheduling_problem_solver("inputs/kfu-s-93", heuristic);

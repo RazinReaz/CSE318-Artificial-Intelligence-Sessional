@@ -6,6 +6,7 @@ Submissions
 *.docx
 *.temp
 **/playground
+**/Report
 notes.txt
 ### VisualStudioCode ###
 **/.vscode
